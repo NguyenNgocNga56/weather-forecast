@@ -1,4 +1,3 @@
-// Modern app.js with 63 provinces, nearest-hour humidity, clickable cities
 const API_BASE = 'https://api.open-meteo.com/v1/forecast';
 
 const PROVINCES = [
@@ -65,7 +64,6 @@ const PROVINCES = [
   {name: "Yên Bái", lat: 21.7088, lon: 104.8656}
 ];
 
-// DOM refs
 const citiesList = document.getElementById('citiesList');
 const searchInput = document.getElementById('searchInput');
 const locateBtn = document.getElementById('locateBtn');
@@ -89,7 +87,6 @@ let activeIndex = 0;
 let lastData = null;
 const ALL_INDICES = PROVINCES.map((_, i) => i);
 
-// helper
 function c2f(c){ return (c * 9/5) + 32; }
 function deg2rad(d){ return d * Math.PI / 180; }
 function distanceKm(lat1, lon1, lat2, lon2){
@@ -101,7 +98,6 @@ function distanceKm(lat1, lon1, lat2, lon2){
   return R * c;
 }
 
-// render city list (indices mapping so filter preserves original index)
 function renderCityList(indices){
   citiesList.innerHTML = '';
   indices.forEach(idx => {
@@ -124,11 +120,9 @@ function setActiveCity(index){
   });
 }
 
-// init list
 renderCityList(ALL_INDICES);
 setActiveCity(0);
 
-// filter
 searchInput.addEventListener('input', () => {
   const q = searchInput.value.trim().toLowerCase();
   const matched = [];
@@ -140,14 +134,12 @@ searchInput.addEventListener('input', () => {
   if (!visible.includes(activeIndex)) setActiveCity(visible[0]);
 });
 
-// unit toggle
 unitToggle.addEventListener('click', () => {
   isCelsius = !isCelsius;
   unitToggle.innerText = isCelsius ? '°C' : '°F';
   if (lastData) displayWeather(lastData.name, lastData.data, lastData.provinceIndex);
 });
 
-// refresh
 refreshBtn.addEventListener('click', () => {
   if (lastData) {
     loadWeatherForProvince(PROVINCES[lastData.provinceIndex], lastData.provinceIndex);
@@ -155,7 +147,6 @@ refreshBtn.addEventListener('click', () => {
   }
 });
 
-// geolocation
 locateBtn.addEventListener('click', () => {
   if (!navigator.geolocation) { alert('Trình duyệt không hỗ trợ Geolocation'); return; }
   navigator.geolocation.getCurrentPosition(pos => {
@@ -170,7 +161,6 @@ locateBtn.addEventListener('click', () => {
   }, err => alert('Không thể lấy vị trí: ' + err.message));
 });
 
-// fetch + display
 async function loadWeatherForProvince(province, provinceIndex){
   try {
     showLoading(true);
@@ -206,7 +196,6 @@ function displayWeather(name, data, provinceIndex = null){
     tempEl.innerText = `${Math.round(tempVal)}°${isCelsius ? 'C' : 'F'}`;
     feelsEl.innerText = Math.round(tempVal) + '°';
 
-    // humidity nearest-hour lookup
     let humidity = '--';
     try {
       const times = (data.hourly && data.hourly.time) || [];
@@ -232,7 +221,6 @@ function displayWeather(name, data, provinceIndex = null){
     const aqi = estimateAQI(name);
     renderAQI(aqi);
 
-    // forecast + chart
     if (data.daily && Array.isArray(data.daily.time)){
       renderForecast(data.daily);
       const labels = data.daily.time;
@@ -282,7 +270,6 @@ function weatherCodeToText(code){
   return m[code] ? {text: m[code][0], icon: m[code][1]} : {text:'Không xác định', icon:'❓'};
 }
 
-// AQI estimate (visual)
 function estimateAQI(name){
   let h = 0;
   for (let i = 0; i < name.length; i++) h = (h * 31 + name.charCodeAt(i)) >>> 0;
@@ -332,7 +319,6 @@ function showLoading(loading){
   }
 }
 
-// initial load
 setTimeout(()=> {
   renderCityList(ALL_INDICES);
   setActiveCity(0);

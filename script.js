@@ -1,3 +1,4 @@
+// Modern app.js with 63 provinces, nearest-hour humidity, clickable cities
 const API_BASE = 'https://api.open-meteo.com/v1/forecast';
 
 const PROVINCES = [
@@ -64,10 +65,12 @@ const PROVINCES = [
   {name: "Yên Bái", lat: 21.7088, lon: 104.8656}
 ];
 
+// DOM refs
 const citiesList = document.getElementById('citiesList');
 const searchInput = document.getElementById('searchInput');
 const locateBtn = document.getElementById('locateBtn');
 const unitToggle = document.getElementById('unitToggle');
+const refreshBtn = document.getElementById('refreshBtn');
 
 const cityNameEl = document.getElementById('cityName');
 const descEl = document.getElementById('desc');
@@ -79,13 +82,15 @@ const iconEl = document.getElementById('icon');
 const updatedEl = document.getElementById('updated');
 const aqiBox = document.getElementById('aqiBox');
 const forecastEl = document.getElementById('forecast');
+const lastAction = document.getElementById('lastAction');
 
 let isCelsius = true;
 let activeIndex = 0;
 let lastData = null;
+const ALL_INDICES = PROVINCES.map((_, i) => i);
 
+// helper
 function c2f(c){ return (c * 9/5) + 32; }
-function f2c(f){ return (f - 32) * 5/9; }
 function deg2rad(d){ return d * Math.PI / 180; }
 function distanceKm(lat1, lon1, lat2, lon2){
   const R = 6371;
@@ -96,9 +101,10 @@ function distanceKm(lat1, lon1, lat2, lon2){
   return R * c;
 }
 
+// render city list (indices mapping so filter preserves original index)
 function renderCityList(indices){
   citiesList.innerHTML = '';
-  indices.forEach((idx) => {
+  indices.forEach(idx => {
     const p = PROVINCES[idx];
     const div = document.createElement('div');
     div.className = 'city-item' + (idx === activeIndex ? ' active' : '');
@@ -111,46 +117,52 @@ function renderCityList(indices){
     citiesList.appendChild(div);
   });
 }
-
 function setActiveCity(index){
   activeIndex = index;
-  Array.from(citiesList.children).forEach(child => {
-    child.classList.toggle('active', Number(child.dataset.index) === index);
+  Array.from(citiesList.children).forEach(ch => {
+    ch.classList.toggle('active', Number(ch.dataset.index) === index);
   });
 }
 
-const ALL_INDICES = PROVINCES.map((_, i) => i);
+// init list
 renderCityList(ALL_INDICES);
+setActiveCity(0);
 
+// filter
 searchInput.addEventListener('input', () => {
   const q = searchInput.value.trim().toLowerCase();
   const matched = [];
-  for (let i = 0; i < PROVINCES.length; i++) {
+  for (let i = 0; i < PROVINCES.length; i++){
     if (!q || PROVINCES[i].name.toLowerCase().includes(q)) matched.push(i);
   }
   renderCityList(matched.length ? matched : ALL_INDICES);
   const visible = matched.length ? matched : ALL_INDICES;
-  if (!visible.includes(activeIndex)) {
-    setActiveCity(visible[0]);
-  } else {
-    setActiveCity(activeIndex);
-  }
+  if (!visible.includes(activeIndex)) setActiveCity(visible[0]);
 });
 
+// unit toggle
 unitToggle.addEventListener('click', () => {
   isCelsius = !isCelsius;
   unitToggle.innerText = isCelsius ? '°C' : '°F';
   if (lastData) displayWeather(lastData.name, lastData.data, lastData.provinceIndex);
 });
 
+// refresh
+refreshBtn.addEventListener('click', () => {
+  if (lastData) {
+    loadWeatherForProvince(PROVINCES[lastData.provinceIndex], lastData.provinceIndex);
+    lastAction.innerText = 'Đang tải lại...';
+  }
+});
+
+// geolocation
 locateBtn.addEventListener('click', () => {
   if (!navigator.geolocation) { alert('Trình duyệt không hỗ trợ Geolocation'); return; }
   navigator.geolocation.getCurrentPosition(pos => {
     const {latitude, longitude} = pos.coords;
-    let best = 0, bestd = Number.MAX_VALUE;
+    let best = 0, bestd = Infinity;
     for (let i = 0; i < PROVINCES.length; i++){
-      const p = PROVINCES[i];
-      const d = distanceKm(latitude, longitude, p.lat, p.lon);
+      const d = distanceKm(latitude, longitude, PROVINCES[i].lat, PROVINCES[i].lon);
       if (d < bestd){ bestd = d; best = i; }
     }
     setActiveCity(best);
@@ -158,18 +170,22 @@ locateBtn.addEventListener('click', () => {
   }, err => alert('Không thể lấy vị trí: ' + err.message));
 });
 
+// fetch + display
 async function loadWeatherForProvince(province, provinceIndex){
   try {
     showLoading(true);
+    lastAction.innerText = `Lấy dữ liệu: ${province.name}`;
     const url = `${API_BASE}?latitude=${province.lat}&longitude=${province.lon}&current_weather=true&hourly=relativehumidity_2m,temperature_2m&daily=temperature_2m_max,temperature_2m_min,weathercode&timezone=auto&forecast_days=7`;
     const res = await fetch(url);
-    if (!res.ok) throw new Error('Không thể lấy dữ liệu thời tiết (HTTP ' + res.status + ')');
+    if (!res.ok) throw new Error('HTTP ' + res.status);
     const data = await res.json();
-    lastData = {name: province.name, data, provinceIndex: provinceIndex};
+    lastData = {name: province.name, data, provinceIndex};
     displayWeather(province.name, data, provinceIndex);
+    lastAction.innerText = `Đã cập nhật: ${province.name}`;
   } catch (e) {
     console.error(e);
-    alert('Lỗi khi lấy dữ liệu thời tiết: ' + (e.message || e));
+    alert('Lỗi khi lấy dữ liệu: ' + (e.message || e));
+    lastAction.innerText = 'Lỗi tải dữ liệu';
   } finally {
     showLoading(false);
   }
@@ -178,7 +194,7 @@ async function loadWeatherForProvince(province, provinceIndex){
 function displayWeather(name, data, provinceIndex = null){
   try {
     const cur = data.current_weather;
-    if (!cur) throw new Error('Dữ liệu current_weather không tồn tại');
+    if (!cur) throw new Error('Không có current_weather');
 
     const wc = weatherCodeToText(cur.weathercode);
     cityNameEl.innerText = name;
@@ -188,17 +204,16 @@ function displayWeather(name, data, provinceIndex = null){
     const tempRaw = cur.temperature;
     const tempVal = isCelsius ? tempRaw : c2f(tempRaw);
     tempEl.innerText = `${Math.round(tempVal)}°${isCelsius ? 'C' : 'F'}`;
-
     feelsEl.innerText = Math.round(tempVal) + '°';
 
+    // humidity nearest-hour lookup
     let humidity = '--';
     try {
       const times = (data.hourly && data.hourly.time) || [];
       const hums = (data.hourly && data.hourly.relativehumidity_2m) || [];
       if (times.length && hums.length && times.length === hums.length) {
         const curMs = new Date(cur.time).getTime();
-        let nearestIdx = 0;
-        let minDiff = Infinity;
+        let nearestIdx = 0, minDiff = Infinity;
         for (let i = 0; i < times.length; i++){
           const tMs = new Date(times[i]).getTime();
           const diff = Math.abs(tMs - curMs);
@@ -207,41 +222,32 @@ function displayWeather(name, data, provinceIndex = null){
         const rawHum = hums[nearestIdx];
         if (rawHum !== undefined && rawHum !== null) humidity = Math.round(rawHum);
       }
-    } catch (e) {
-      humidity = '--';
-    }
-    humidityEl.innerText = humidity === '--' ? '--' : humidity;
+    } catch (e) { humidity = '--'; }
+    humidityEl.innerText = humidity === '--' ? '--' : `${humidity}%`;
 
-    windEl.innerText = (cur.windspeed !== undefined ? cur.windspeed : '--');
+    windEl.innerText = (cur.windspeed !== undefined ? `${cur.windspeed} m/s` : '--');
 
-    try {
-      const dt = new Date(cur.time);
-      updatedEl.innerText = 'Cập nhật: ' + dt.toLocaleString('vi-VN');
-    } catch { updatedEl.innerText = 'Cập nhật: ' + cur.time; }
+    try { updatedEl.innerText = 'Cập nhật: ' + new Date(cur.time).toLocaleString('vi-VN'); } catch { updatedEl.innerText = 'Cập nhật: ' + cur.time; }
 
     const aqi = estimateAQI(name);
     renderAQI(aqi);
 
-    if (data.daily && Array.isArray(data.daily.time)) {
+    // forecast + chart
+    if (data.daily && Array.isArray(data.daily.time)){
       renderForecast(data.daily);
       const labels = data.daily.time;
       const maxs = (data.daily.temperature_2m_max || []).map(v => isCelsius ? v : c2f(v));
       const mins = (data.daily.temperature_2m_min || []).map(v => isCelsius ? v : c2f(v));
-      if (typeof drawTempChart === 'function') {
-        drawTempChart(labels, maxs, mins, isCelsius);
-      } else if (window.drawTempChart) {
-        window.drawTempChart(labels, maxs, mins, isCelsius);
-      }
+      if (typeof drawTempChart === 'function') drawTempChart(labels, maxs, mins, isCelsius);
     } else {
-      forecastEl.innerHTML = '<div class="day card">Không có dự báo</div>';
+      forecastEl.innerHTML = '<div class="forecast-card">Không có dự báo</div>';
     }
 
     updateTheme(cur.weathercode, cur.is_day);
-
     if (typeof provinceIndex === 'number') setActiveCity(provinceIndex);
   } catch (err) {
-    console.error('displayWeather error', err);
-    alert('Lỗi hiển thị dữ liệu: ' + (err.message || err));
+    console.error(err);
+    alert('Lỗi hiển thị: ' + (err.message || err));
   }
 }
 
@@ -253,48 +259,34 @@ function renderForecast(daily){
   const codeArr = daily.weathercode || [];
   for (let i = 0; i < days.length; i++){
     const d = days[i];
-    const max = maxArr[i] !== undefined ? (isCelsius ? Math.round(maxArr[i]) : Math.round(c2f(maxArr[i]))) : '--';
-    const min = minArr[i] !== undefined ? (isCelsius ? Math.round(minArr[i]) : Math.round(c2f(minArr[i]))) : '--';
-    const code = codeArr[i] !== undefined ? codeArr[i] : null;
     const dayName = new Date(d).toLocaleDateString('vi-VN', {weekday:'short', day:'numeric'});
-    const icon = code !== null ? weatherCodeToText(code).icon : '❓';
-    const div = document.createElement('div');
-    div.className = 'day card';
-    div.innerHTML = `<div class="d">${dayName}</div><div class="ic" style="font-size:28px">${icon}</div><div>${max}° / ${min}°</div>`;
-    forecastEl.appendChild(div);
+    const max = maxArr[i] !== undefined ? Math.round(isCelsius ? maxArr[i] : c2f(maxArr[i])) : '--';
+    const min = minArr[i] !== undefined ? Math.round(isCelsius ? minArr[i] : c2f(minArr[i])) : '--';
+    const icon = (codeArr[i] !== undefined) ? weatherCodeToText(codeArr[i]).icon : '❓';
+
+    const card = document.createElement('div');
+    card.className = 'forecast-card';
+    card.innerHTML = `<div class="date">${dayName}</div><div class="icon">${icon}</div><div class="temp">${max}° / ${min}°</div>`;
+    forecastEl.appendChild(card);
   }
 }
 
 function weatherCodeToText(code){
   const m = {
-    0:['Trời quang','☀️'],
-    1:['Ít mây','🌤️'],
-    2:['Có mây','⛅'],
-    3:['Mây dày','☁️'],
-    45:['Sương mù','🌫️'],
-    48:['Sương mù đặc','🌫️'],
-    51:['Mưa phùn nhẹ','🌦️'],
-    53:['Mưa phùn vừa','🌦️'],
-    55:['Mưa phùn dày','🌧️'],
-    61:['Mưa nhỏ','🌧️'],
-    63:['Mưa vừa','🌧️'],
-    65:['Mưa to','⛈️'],
-    71:['Tuyết nhẹ','🌨️'],
-    73:['Tuyết vừa','🌨️'],
-    75:['Tuyết to','❄️'],
-    80:['Mưa rào','🌧️'],
-    81:['Mưa rào nặng','🌧️'],
-    95:['Dông bão','⛈️'],
-    96:['Dông (mưa đá nhẹ)','⛈️'],
-    99:['Dông mạnh','⛈️']
+    0:['Trời quang','☀️'],1:['Ít mây','🌤️'],2:['Có mây','⛅'],3:['Mây dày','☁️'],
+    45:['Sương mù','🌫️'],48:['Sương mù đặc','🌫️'],51:['Mưa phùn nhẹ','🌦️'],53:['Mưa phùn vừa','🌦️'],
+    55:['Mưa phùn dày','🌧️'],61:['Mưa nhỏ','🌧️'],63:['Mưa vừa','🌧️'],65:['Mưa to','⛈️'],
+    71:['Tuyết nhẹ','🌨️'],73:['Tuyết vừa','🌨️'],75:['Tuyết to','❄️'],80:['Mưa rào','🌧️'],
+    81:['Mưa rào nặng','🌧️'],95:['Dông bão','⛈️'],96:['Dông (mưa đá nhẹ)','⛈️'],99:['Dông mạnh','⛈️']
   };
   return m[code] ? {text: m[code][0], icon: m[code][1]} : {text:'Không xác định', icon:'❓'};
 }
 
+// AQI estimate (visual)
 function estimateAQI(name){
   let h = 0;
   for (let i = 0; i < name.length; i++) h = (h * 31 + name.charCodeAt(i)) >>> 0;
-  const val = 10 + (h % 171); 
+  const val = 10 + (h % 171);
   let cat = 'Tốt';
   if (val <= 50) cat = 'Tốt';
   else if (val <= 100) cat = 'Trung bình';
@@ -305,7 +297,7 @@ function estimateAQI(name){
 function renderAQI(aqi){
   aqiBox.innerText = `AQI — ${aqi.value} (${aqi.category})`;
   aqiBox.style.background = aqiBG(aqi.value);
-  aqiBox.style.color = (aqi.value>150) ? '#fff' : '#072033';
+  aqiBox.style.color = aqi.value > 150 ? '#fff' : '#072033';
 }
 function aqiBG(v){
   if (v <= 50) return 'linear-gradient(90deg,#e6fff0,#d4fff0)';
@@ -317,16 +309,16 @@ function aqiBG(v){
 function updateTheme(code, is_day){
   const body = document.body;
   if (!is_day) {
-    body.style.background = 'linear-gradient(#071124,#021124)';
+    body.style.background = 'linear-gradient(180deg,#071124,#021124)';
     body.style.color = '#dfeff6';
   } else if ([61,63,65,80,81,95,96,99].includes(code)) {
-    body.style.background = 'linear-gradient(#9fd2ec,#e6f6ff)';
+    body.style.background = 'linear-gradient(180deg,#cfe8ff,#f0fbff)';
     body.style.color = '#072033';
   } else if ([71,73,75].includes(code)) {
-    body.style.background = 'linear-gradient(#cfe8ff,#f3faff)';
+    body.style.background = 'linear-gradient(180deg,#e6f5ff,#f9fdff)';
     body.style.color = '#072033';
   } else {
-    body.style.background = 'linear-gradient(#a7d8ff,#ffffff)';
+    body.style.background = 'linear-gradient(180deg,#e6f6ff,#ffffff)';
     body.style.color = '#072033';
   }
 }
@@ -340,7 +332,9 @@ function showLoading(loading){
   }
 }
 
-setActiveCity(0);
-renderCityList(ALL_INDICES);
-loadWeatherForProvince(PROVINCES[0], 0);
-
+// initial load
+setTimeout(()=> {
+  renderCityList(ALL_INDICES);
+  setActiveCity(0);
+  loadWeatherForProvince(PROVINCES[0], 0);
+}, 120);

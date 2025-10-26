@@ -3,69 +3,102 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Dự báo thời tiết</title>
+  <title>Thời tiết VN — Giao diện mới</title>
+
+  <!-- Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <link rel="stylesheet" href="style.css">
-
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
   <div class="app">
-    <aside class="sidebar">
-      <div class="brand">
-        <h2>Thời tiết VN</h2>
+    <aside class="sidebar" aria-label="Danh sách tỉnh thành">
+      <div class="sidebar-top">
+        <div class="brand">
+          <div class="logo">☼</div>
+          <div>
+            <h1>Thời tiết VN</h1>
+            <p class="subtitle">Nhiệt độ • Dự báo 7 ngày • AQI</p>
+          </div>
+        </div>
+
         <div class="controls">
-          <button id="locateBtn" title="Dùng vị trí của tôi">📍 Vị trí</button>
-          <button id="unitToggle" title="Đổi °C/°F">°C</button>
+          <div class="search">
+            <input id="searchInput" placeholder="Tìm tỉnh/thành..." aria-label="Tìm tỉnh thành" />
+            <button id="locateBtn" title="Vị trí của tôi">📍</button>
+          </div>
+          <div class="unit-row">
+            <button id="unitToggle" class="btn-ghost">°C</button>
+            <button id="refreshBtn" class="btn-ghost" title="Làm mới dữ liệu">⟳</button>
+          </div>
         </div>
       </div>
 
-      <div class="search">
-        <input id="searchInput" placeholder="Tìm tỉnh/thành..." />
-      </div>
+      <div id="citiesList" class="cities" role="list" aria-label="Danh sách tỉnh thành"></div>
 
-      <div id="citiesList" class="cities"></div>
+      <div class="sidebar-bottom">
+        <small>Click một tỉnh để xem chi tiết. Dữ liệu từ <strong>Open-Meteo</strong>.</small>
+      </div>
     </aside>
 
     <main class="main">
-      <section class="top">
-        <div id="aqiBox" class="aqi">AQI — --</div>
-        <div id="currentCard" class="card currentCard">
-          <div class="left">
-            <div id="cityName" class="city">—</div>
-            <div id="desc" class="desc">—</div>
-            <div class="meta">
-              <div id="temp" class="temp">--°</div>
-              <div class="extras">
-                <div>Feels: <span id="feels">--</span></div>
-                <div>Độ ẩm: <span id="humidity">--</span>%</div>
-                <div>Gió: <span id="wind">--</span> m/s</div>
-              </div>
-            </div>
-          </div>
-          <div class="right">
-            <div id="icon" class="icon">☀️</div>
+      <header class="main-header">
+        <div id="aqiBox" class="aqi-badge">AQI — --</div>
+        <div id="lastAction" class="last-action">Sẵn sàng</div>
+      </header>
+
+      <section id="currentCard" class="card current-card">
+        <div class="left">
+          <div class="city-and-time">
+            <h2 id="cityName">—</h2>
             <div id="updated" class="updated">—</div>
           </div>
+          <div id="desc" class="desc">—</div>
+
+          <div class="main-temp-row">
+            <div class="temp-wrap">
+              <div id="temp" class="temp">--°</div>
+              <div id="feels" class="feels">Feels: --</div>
+            </div>
+
+            <div class="meta-grid">
+              <div class="meta-item"><span class="label">Độ ẩm</span><span id="humidity" class="value">--%</span></div>
+              <div class="meta-item"><span class="label">Gió</span><span id="wind" class="value">-- m/s</span></div>
+              <div class="meta-item"><span class="label">Trạng thái</span><span id="status" class="value">--</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="right">
+          <div id="icon" class="weather-icon">☀️</div>
         </div>
       </section>
 
-      <section class="forecastSection">
+      <section class="forecast card">
         <h3>Dự báo 7 ngày</h3>
-        <div id="forecast" class="forecast"></div>
+        <div id="forecast" class="forecast-list"></div>
       </section>
 
-      <section class="chartSection card">
-        <h4>Biểu đồ nhiệt độ 7 ngày</h4>
-        <canvas id="tempChart"></canvas>
+      <section class="chart card">
+        <div class="chart-head">
+          <h4>Biểu đồ nhiệt độ (7 ngày)</h4>
+        </div>
+        <div class="chart-body">
+          <canvas id="tempChart" height="140"></canvas>
+        </div>
       </section>
 
+      <footer class="footer">
+        <div>© 2025 — Thời tiết VN</div>
+      </footer>
     </main>
   </div>
 
-  <footer class="footer">© 2025</footer>
-
-  <script src="script.js"></script>
+  <!-- script files: chart.js first, then app.js -->
   <script src="chart.js"></script>
+  <script src="script.js"></script>
 </body>
 </html>

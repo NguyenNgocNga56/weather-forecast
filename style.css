@@ -1,111 +1,262 @@
+/* Modern clean UI — soft gradients, glass cards, subtle shadows */
 :root{
-  --blue-100: #a7d8ff;
-  --blue-300: #4da3ff;
-  --bg: linear-gradient(to bottom, #a7d8ff, #ffffff);
-  --card: rgba(255,255,255,0.95);
-  --muted: #546678;
+  --bg1: #e6f6ff;
+  --bg2: #ffffff;
+  --accent: #1f8ef1;
+  --muted: #6a7982;
+  --card: rgba(255,255,255,0.98);
+  --glass: rgba(255,255,255,0.7);
+  --radius: 14px;
+  --shadow: 0 14px 40px rgba(15,30,50,0.08);
 }
 
 *{box-sizing:border-box}
+html,body{height:100%;margin:0}
 body{
-  margin:0;background:var(--bg);font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
-  color:#082033;
+  font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  background: linear-gradient(180deg,var(--bg1),var(--bg2));
+  color:#072033;
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+  line-height:1.4;
 }
 
-.app{display:flex;min-height:calc(100vh - 56px)}
-.sidebar{
-  width:320px;padding:16px;box-shadow: 8px 0 24px rgba(2,6,23,0.06);
-  background: linear-gradient(180deg,#e6f6ff, #f7fbff);
-}
-.main{flex:1;padding:18px 24px;overflow:auto}
-.footer{text-align:center;padding:12px 8px;background:var(--blue-300);color:white;font-weight:600}
+/* Layout */
+.app{max-width:1200px;margin:20px auto;display:flex;gap:20px;padding:12px}
+.sidebar{width:320px;padding:18px;border-radius:var(--radius);background:linear-gradient(180deg,#f7fbff,#ffffff);box-shadow:var(--shadow);border:1px solid rgba(15,30,50,0.04);display:flex;flex-direction:column}
+.main{flex:1;display:flex;flex-direction:column;gap:18px}
 
-.brand{display:flex;align-items:center;justify-content:space-between}
-.brand h2{margin:0;color:#04314a}
-.controls button{margin-left:8px;padding:8px 10px;border-radius:8px;border:0;background:#fff;cursor:pointer}
-.search{margin-top:12px}
-#searchInput{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(2,6,23,0.06)}
+/* Sidebar top */
+.brand{display:flex;gap:12px;align-items:center}
+.logo{width:44px;height:44px;border-radius:10px;background:linear-gradient(90deg,#62b1ff,#2f9eff);display:grid;place-items:center;color:white;font-weight:700;font-size:20px}
+.brand h1{margin:0;font-size:1.1rem}
+.subtitle{margin:0;color:var(--muted);font-size:13px}
 
-.cities{margin-top:12px;max-height:72vh;overflow:auto;display:flex;flex-direction:column;gap:8px}
+/* Controls */
+.controls{margin-top:14px;display:flex;flex-direction:column;gap:10px}
+.search{display:flex;gap:8px}
+.search input{flex:1;padding:10px;border-radius:10px;border:1px solid rgba(8,48,70,0.06);background:transparent;font-size:14px}
+.search button{border:0;padding:10px;border-radius:10px;background:var(--accent);color:white;cursor:pointer}
+.unit-row{display:flex;gap:8px;justify-content:flex-end}
+.btn-ghost{padding:8px 10px;border-radius:10px;border:1px solid rgba(15,30,50,0.06);background:transparent;cursor:pointer;color:var(--accent)}
+
+/* Cities list */
+.cities{margin-top:12px;overflow:auto;padding-right:6px;display:flex;flex-direction:column;gap:8px}
 .city-item{
-  display:flex;justify-content:space-between;align-items:center;padding:10px;border-radius:10px;background:var(--card);
-  border:1px solid rgba(2,6,23,0.04);cursor:pointer;transition:transform .12s,box-shadow .12s;
+  display:flex;justify-content:space-between;align-items:center;padding:12px;border-radius:12px;background:var(--card);
+  border:1px solid rgba(15,30,50,0.04);cursor:pointer;transition:transform .14s,box-shadow .14s,background .14s;
 }
-.city-item:hover{transform:translateY(-4px);box-shadow:0 8px 20px rgba(2,6,23,0.06)}
-.city-item.active{border-left:4px solid var(--blue-300);}
+.city-item .small{color:var(--muted);font-size:12px}
+.city-item:hover{transform:translateY(-6px);box-shadow:0 18px 40px rgba(15,30,50,0.06)}
+.city-item.active{background:linear-gradient(90deg,#f0fbff,#ffffff);border-left:5px solid var(--accent)}
 
-.aqi{padding:10px;border-radius:10px;background:linear-gradient(90deg,#ffffff,#f1fcff);border:1px solid rgba(2,6,23,0.03);font-weight:700;margin-bottom:12px;text-align:center}
+/* Main header */
+.main-header{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.aqi-badge{padding:10px 14px;border-radius:12px;background:linear-gradient(90deg,#fff1f0,#fff8f6);font-weight:700;border:1px solid rgba(15,30,50,0.03)}
+.last-action{color:var(--muted);font-size:13px}
 
-.card{background:var(--card);padding:14px;border-radius:12px;border:1px solid rgba(2,6,23,0.04)}
-.currentCard{display:flex;justify-content:space-between;gap:12px;align-items:center}
-.currentCard .left{flex:1}
-.city{font-size:20px;font-weight:700}
-.desc{color:var(--muted);margin-top:6px}
-.temp{font-size:48px;font-weight:800;margin-top:6px}
-.extras{display:flex;gap:10px;color:var(--muted);margin-top:8px}
+/* Card */
+.card{padding:16px;border-radius:12px;background:var(--card);box-shadow:var(--shadow);border:1px solid rgba(15,30,50,0.04)}
+.current-card{display:flex;justify-content:space-between;align-items:center;gap:18px}
 
-.icon{font-size:56px}
+/* Left section */
+.city-and-time{display:flex;gap:12px;align-items:end}
+.city-and-time h2{margin:0;font-size:1.4rem}
+.updated{color:var(--muted);font-size:13px}
+.desc{color:var(--muted);margin-top:8px}
 
-.forecastSection{margin-top:18px}
-.forecast{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
-.forecast .day{background:linear-gradient(180deg,#ffffff,#f4fbff);padding:10px;border-radius:10px;border:1px solid rgba(2,6,23,0.03);width:140px;text-align:center}
-.forecast .day .d{font-weight:700}
+/* Temp area */
+.main-temp-row{display:flex;gap:28px;align-items:center;margin-top:12px;width:100%}
+.temp-wrap{display:flex;flex-direction:column;align-items:flex-start;gap:8px}
+.temp{font-size:56px;font-weight:800;color:var(--accent)}
+.feels{color:var(--muted);font-size:14px}
+.meta-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.meta-item{background:linear-gradient(180deg,#fbfdff,#f6fbff);padding:8px;border-radius:8px;text-align:center;border:1px solid rgba(15,30,50,0.03)}
+.meta-item .label{display:block;color:var(--muted);font-size:12px}
+.meta-item .value{font-weight:700;margin-top:6px}
 
-.chartSection{margin-top:18px}
+/* Icon */
+.weather-icon{font-size:72px;padding:6px}
 
-@media (max-width:900px){
-  .app{flex-direction:column}
+/* Forecast list */
+.forecast-list{display:flex;gap:12px;flex-wrap:wrap;margin-top:12px}
+.forecast-card{width:130px;padding:12px;border-radius:12px;background:linear-gradient(180deg,#ffffff,#f6fbff);text-align:center;border:1px solid rgba(15,30,50,0.03);box-shadow:0 10px 30px rgba(15,30,50,0.04)}
+.forecast-card .date{font-weight:700;color:#0b3b4d}
+.forecast-card .icon{font-size:28px;margin:8px 0}
+.forecast-card .temp{color:var(--muted);font-size:13px}
+
+/* Chart area */
+.chart-body{height:180px}
+
+/* Footer */
+.footer{color:var(--muted);text-align:center;padding:8px}
+
+/* Responsive */
+@media (max-width:980px){
+  .app{flex-direction:column;padding:8px;margin:12px auto}
   .sidebar{width:100%}
-  .cities{max-height:240px}
+  .main{width:100%}
+  .forecast-list{justify-content:center}
+  .meta-grid{grid-template-columns:repeat(2,1fr)}
+}
+/* ========== QUICK UI TWEAKS: bold text + vertical scroll for city list ========== */
+
+/* Make important text bolder and more legible */
+.brand h1, .city-and-time h2, .temp, .forecastSection h3, .chart-head h4 {
+  font-weight: 800; /* mạnh hơn */
+  letter-spacing: -0.2px;
 }
 
-.sidebar{
-  width:320px;
-  padding:16px;
-  box-shadow: 8px 0 24px rgba(2,6,23,0.08);
-  background: linear-gradient(180deg,#e6f6ff, #f3f9ff);
+.city-item { 
+  font-weight: 600;   /* tên thành phố đậm hơn */
+  color: #05304a;     /* hơi đậm để contrast hơn */
 }
 
-.city-item{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  padding:12px 14px;
-  border-radius:10px;
-  background: #ffffff;           
-  border:1px solid rgba(2,6,23,0.06);
-  cursor:pointer;
-  transition:transform .12s,box-shadow .12s, border-color .12s;
-  color:#072033;                        
-}
-.city-item .small { color:#6b7a85; font-size:12px; }
-
-.city-item:hover{
-  transform:translateY(-4px);
-  box-shadow:0 12px 30px rgba(2,6,23,0.10);
-  border-color: rgba(77,163,255,0.45);
+/* Make small meta text a bit heavier for legibility */
+.city-item .small, .updated, .desc, .meta-item .label {
+  font-weight: 500;
+  color: #48636f;
 }
 
-.city-item.active{
-  border-left:6px solid var(--blue-300);
-  box-shadow: 0 16px 30px rgba(77,163,255,0.08);
-  background: #f2fbff;
+/* Emphasize temperature */
+.temp { 
+  font-size: 62px; 
+  font-weight: 900;
+  color: var(--accent);
 }
 
-.currentCard{ background: #ffffff; border:1px solid rgba(2,6,23,0.06); color:#053248; }
-.temp{ font-size:52px; color:#0b5bd1; }
-.desc{ color:#2f4a57; }
-
-.aqi{
-  padding:12px;border-radius:10px;background:#fff1f0;border:1px solid rgba(0,0,0,0.04);
-  font-weight:800;color:#2b2b2b;
+/* Sidebar: fixed max height and vertical scroll for list of cities */
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  /* ensure sidebar fills viewport height minus padding */
+  min-height: calc(100vh - 40px);
 }
 
-.forecast .day{
-  background: #ffffff;
-  border:1px solid rgba(2,6,23,0.04);
-  padding:12px;border-radius:10px;width:140px;text-align:center;color:#0b3b4d;
-  box-shadow: 0 6px 18px rgba(2,6,23,0.04);
+/* Set explicit space for header + controls so cities list gets a fixed max-height */
+.sidebar-top {
+  flex: 0 0 auto;
 }
-.forecast .day .d{ color:#0b3b4d; font-weight:700; }
 
+/* Make the cities region scrollable vertically */
+.cities {
+  flex: 1 1 auto;                 /* take remaining vertical space */
+  max-height: calc(100vh - 260px);/* adjust 260px if your header/controls taller */
+  overflow-y: auto;
+  padding-right: 8px;             /* space for scrollbar */
+  display: flex;
+  flex-direction: column;         /* ensure column layout */
+  gap: 8px;
+}
+
+/* Improve scroll appearance (WebKit) */
+.cities::-webkit-scrollbar { width: 10px; }
+.cities::-webkit-scrollbar-track { background: transparent; }
+.cities::-webkit-scrollbar-thumb {
+  background: rgba(47,158,255,0.20);
+  border-radius: 8px;
+  border: 2px solid rgba(255,255,255,0.8);
+}
+
+/* Keep each city row compact (no wrapping) */
+.city-item { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* Small screens: reduce max-height so it still fits */
+@media (max-width: 980px) {
+  .cities { max-height: 220px; }
+  .temp { font-size: 48px; }
+  .brand h1 { font-size: 1rem; }
+}
+/* ====== Accessibility / Contrast fixes (paste to end of style.css) ====== */
+
+/* Make small/meta text darker and slightly bolder for readability */
+.updated, .desc, .sidebar-footer, .city-item .small, .meta-item .label, .meta-item .value, .last-action {
+  color: #23414e;        /* darker teal for contrast */
+  font-weight: 600;
+  opacity: 1;            /* ensure not faded */
+}
+
+/* Make city names and list items more prominent */
+.city-item { 
+  color: #072033;        /* strong dark blue */
+  font-weight: 700;
+}
+
+/* Make selected/active city clearer */
+.city-item.active {
+  background: linear-gradient(90deg,#eef9ff,#ffffff);
+  box-shadow: 0 14px 36px rgba(15,30,50,0.08);
+  border-left-color: var(--accent);
+}
+
+/* Emphasize card headings and forecast day labels */
+.city-and-time h2, .forecastSection h3, .chart-head h4, .forecast-card .date {
+  color: #042b3a;
+  font-weight: 800;
+  text-shadow: none;
+}
+
+/* Forecast temps and small text darker */
+.forecast-card .temp, .forecast-card .icon, .forecast-card .date {
+  color: #0b3b4d;
+  font-weight: 700;
+}
+
+/* Current card meta stronger */
+.temp-value, .temp, .feels {
+  color: var(--accent);
+  font-weight: 900;
+  text-shadow: none;
+}
+
+/* Icon contrast */
+.weather-icon {
+  filter: drop-shadow(0 6px 18px rgba(2,10,30,0.12));
+  color: inherit; /* keep emoji color */
+}
+
+/* AQI badge more legible */
+.aqi-badge {
+  color: #052a2a;
+  font-weight: 800;
+  box-shadow: 0 8px 20px rgba(2,6,23,0.06);
+}
+
+/* Sidebar footer & hints */
+.sidebar-footer {
+  color: #35545a;
+  font-weight: 600;
+  opacity: 1;
+}
+
+/* Ensure cards have readable text color */
+.card, .current-card, .forecast-card {
+  color: #052d3a;
+}
+
+/* Improve contrast for small labels inside left list (coordinates) */
+.city-item .small {
+  color: #4a6570;
+  font-weight: 600;
+  font-size: 12px;
+}
+
+/* Slightly darken the updated timestamp in top-right */
+.updated {
+  color: #466271;
+  font-weight: 600;
+  font-size: 13px;
+}
+
+/* Make the search placeholder less faint */
+.search input::placeholder {
+  color: #7aa7c9;
+  opacity: 1;
+  font-weight: 600;
+}
+
+/* Accessibility: increase contrast on small screens too */
+@media (max-width:980px){
+  .desc, .updated, .city-item .small { color: #214449; font-weight:700; }
+  .temp { font-size: 48px; }
+}

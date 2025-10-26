@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Dự báo thời tiết</title>
+
+  <link rel="stylesheet" href="style.css">
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand">
+        <h2>Thời tiết VN</h2>
+        <div class="controls">
+          <button id="locateBtn" title="Dùng vị trí của tôi">📍 Vị trí</button>
+          <button id="unitToggle" title="Đổi °C/°F">°C</button>
+        </div>
+      </div>
+
+      <div class="search">
+        <input id="searchInput" placeholder="Tìm tỉnh/thành..." />
+      </div>
+
+      <div id="citiesList" class="cities"></div>
+    </aside>
+
+    <main class="main">
+      <section class="top">
+        <div id="aqiBox" class="aqi">AQI — --</div>
+        <div id="currentCard" class="card currentCard">
+          <div class="left">
+            <div id="cityName" class="city">—</div>
+            <div id="desc" class="desc">—</div>
+            <div class="meta">
+              <div id="temp" class="temp">--°</div>
+              <div class="extras">
+                <div>Feels: <span id="feels">--</span></div>
+                <div>Độ ẩm: <span id="humidity">--</span>%</div>
+                <div>Gió: <span id="wind">--</span> m/s</div>
+              </div>
+            </div>
+          </div>
+          <div class="right">
+            <div id="icon" class="icon">☀️</div>
+            <div id="updated" class="updated">—</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="forecastSection">
+        <h3>Dự báo 7 ngày</h3>
+        <div id="forecast" class="forecast"></div>
+      </section>
+
+      <section class="chartSection card">
+        <h4>Biểu đồ nhiệt độ 7 ngày</h4>
+        <canvas id="tempChart"></canvas>
+      </section>
+
+    </main>
+  </div>
+
+  <footer class="footer">© 2025</footer>
+
+  <script src="script.js"></script>
+  <script src="chart.js"></script>
+</body>
+</html>

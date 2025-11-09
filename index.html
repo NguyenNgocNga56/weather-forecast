@@ -3,12 +3,10 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Thời tiết VN — Giao diện mới</title>
+  <title>Dự Báo Thời tiết</title>
 
-  <!-- Font -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
 
-  <!-- Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <link rel="stylesheet" href="style.css">
@@ -40,7 +38,10 @@
       <div id="citiesList" class="cities" role="list" aria-label="Danh sách tỉnh thành"></div>
 
       <div class="sidebar-bottom">
-        <small>Click một tỉnh để xem chi tiết. Dữ liệu từ <strong>Open-Meteo</strong>.</small>
+        <small>Click một tỉnh để xem chi tiết.</small>
+        <a href="intro.html" class="intro-link">
+        <button class="btn-intro">Giới thiệu thành viên</button>
+        </a>
       </div>
     </aside>
 
@@ -97,7 +98,6 @@
     </main>
   </div>
 
-  <!-- script files: chart.js first, then app.js -->
   <script src="chart.js"></script>
   <script src="script.js"></script>
 </body>

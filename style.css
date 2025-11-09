@@ -78,20 +78,16 @@ body{
 /* Icon */
 .weather-icon{font-size:72px;padding:6px}
 
-/* Forecast list */
 .forecast-list{display:flex;gap:12px;flex-wrap:wrap;margin-top:12px}
 .forecast-card{width:130px;padding:12px;border-radius:12px;background:linear-gradient(180deg,#ffffff,#f6fbff);text-align:center;border:1px solid rgba(15,30,50,0.03);box-shadow:0 10px 30px rgba(15,30,50,0.04)}
 .forecast-card .date{font-weight:700;color:#0b3b4d}
 .forecast-card .icon{font-size:28px;margin:8px 0}
 .forecast-card .temp{color:var(--muted);font-size:13px}
 
-/* Chart area */
 .chart-body{height:180px}
 
-/* Footer */
 .footer{color:var(--muted);text-align:center;padding:8px}
 
-/* Responsive */
 @media (max-width:980px){
   .app{flex-direction:column;padding:8px;margin:12px auto}
   .sidebar{width:100%}
@@ -99,46 +95,43 @@ body{
   .forecast-list{justify-content:center}
   .meta-grid{grid-template-columns:repeat(2,1fr)}
 }
-/* ========== QUICK UI TWEAKS: bold text + vertical scroll for city list ========== */
 
-/* Make important text bolder and more legible */
 .brand h1, .city-and-time h2, .temp, .forecastSection h3, .chart-head h4 {
-  font-weight: 800; /* mạnh hơn */
+  font-weight: 800; 
   letter-spacing: -0.2px;
 }
 
-.city-item { 
-  font-weight: 600;   /* tên thành phố đậm hơn */
-  color: #05304a;     /* hơi đậm để contrast hơn */
+.sidebar-bottom small {
+  font-weight: 600;
+  color: #333;
 }
 
-/* Make small meta text a bit heavier for legibility */
+.city-item { 
+  font-weight: 600;
+  color: #05304a;    
+}
+
 .city-item .small, .updated, .desc, .meta-item .label {
   font-weight: 500;
   color: #48636f;
 }
 
-/* Emphasize temperature */
 .temp { 
   font-size: 62px; 
   font-weight: 900;
   color: var(--accent);
 }
 
-/* Sidebar: fixed max height and vertical scroll for list of cities */
 .sidebar {
   display: flex;
   flex-direction: column;
-  /* ensure sidebar fills viewport height minus padding */
   min-height: calc(100vh - 40px);
 }
 
-/* Set explicit space for header + controls so cities list gets a fixed max-height */
 .sidebar-top {
   flex: 0 0 auto;
 }
 
-/* Make the cities region scrollable vertically */
 .cities {
   flex: 1 1 auto;                 /* take remaining vertical space */
   max-height: calc(100vh - 260px);/* adjust 260px if your header/controls taller */
@@ -149,7 +142,30 @@ body{
   gap: 8px;
 }
 
-/* Improve scroll appearance (WebKit) */
+.intro-link {
+  display: block;
+  margin-top: 12px;
+  text-decoration: none;
+}
+
+.btn-intro {
+  width: 100%;
+  padding: 12px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.btn-intro:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
 .cities::-webkit-scrollbar { width: 10px; }
 .cities::-webkit-scrollbar-track { background: transparent; }
 .cities::-webkit-scrollbar-thumb {
@@ -158,104 +174,87 @@ body{
   border: 2px solid rgba(255,255,255,0.8);
 }
 
-/* Keep each city row compact (no wrapping) */
 .city-item { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-/* Small screens: reduce max-height so it still fits */
 @media (max-width: 980px) {
   .cities { max-height: 220px; }
   .temp { font-size: 48px; }
   .brand h1 { font-size: 1rem; }
 }
-/* ====== Accessibility / Contrast fixes (paste to end of style.css) ====== */
 
-/* Make small/meta text darker and slightly bolder for readability */
 .updated, .desc, .sidebar-footer, .city-item .small, .meta-item .label, .meta-item .value, .last-action {
-  color: #23414e;        /* darker teal for contrast */
+  color: #23414e;     
   font-weight: 600;
-  opacity: 1;            /* ensure not faded */
+  opacity: 1;           
 }
 
-/* Make city names and list items more prominent */
 .city-item { 
-  color: #072033;        /* strong dark blue */
+  color: #072033;     
   font-weight: 700;
 }
 
-/* Make selected/active city clearer */
 .city-item.active {
   background: linear-gradient(90deg,#eef9ff,#ffffff);
   box-shadow: 0 14px 36px rgba(15,30,50,0.08);
   border-left-color: var(--accent);
 }
 
-/* Emphasize card headings and forecast day labels */
 .city-and-time h2, .forecastSection h3, .chart-head h4, .forecast-card .date {
   color: #042b3a;
   font-weight: 800;
   text-shadow: none;
 }
 
-/* Forecast temps and small text darker */
 .forecast-card .temp, .forecast-card .icon, .forecast-card .date {
   color: #0b3b4d;
   font-weight: 700;
 }
 
-/* Current card meta stronger */
 .temp-value, .temp, .feels {
   color: var(--accent);
   font-weight: 900;
   text-shadow: none;
 }
 
-/* Icon contrast */
 .weather-icon {
   filter: drop-shadow(0 6px 18px rgba(2,10,30,0.12));
-  color: inherit; /* keep emoji color */
+  color: inherit; 
 }
 
-/* AQI badge more legible */
 .aqi-badge {
   color: #052a2a;
   font-weight: 800;
   box-shadow: 0 8px 20px rgba(2,6,23,0.06);
 }
 
-/* Sidebar footer & hints */
 .sidebar-footer {
   color: #35545a;
   font-weight: 600;
   opacity: 1;
 }
 
-/* Ensure cards have readable text color */
 .card, .current-card, .forecast-card {
   color: #052d3a;
 }
 
-/* Improve contrast for small labels inside left list (coordinates) */
 .city-item .small {
   color: #4a6570;
   font-weight: 600;
   font-size: 12px;
 }
 
-/* Slightly darken the updated timestamp in top-right */
 .updated {
   color: #466271;
   font-weight: 600;
   font-size: 13px;
 }
 
-/* Make the search placeholder less faint */
 .search input::placeholder {
   color: #7aa7c9;
   opacity: 1;
   font-weight: 600;
 }
 
-/* Accessibility: increase contrast on small screens too */
 @media (max-width:980px){
   .desc, .updated, .city-item .small { color: #214449; font-weight:700; }
   .temp { font-size: 48px; }

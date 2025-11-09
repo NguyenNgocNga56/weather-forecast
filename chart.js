@@ -1,4 +1,3 @@
-// chart.js: drawTempChart(labels[], maxTemps[], minTemps[], isCelsius)
 let tempChart = null;
 
 function drawTempChart(labels, maxTemps, minTemps, isCelsius = true) {
